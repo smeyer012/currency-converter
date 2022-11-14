@@ -2,6 +2,10 @@ body {
   background-color: #f2f2f2;
 }
 
+main {
+  padding-top: 65px;
+}
+
 .box {
   width: 90%;
   max-width: 300px;
