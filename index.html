@@ -32,18 +32,38 @@
       </div>
     </nav>
     <main>
+      <h1>The Currency Converter</h1>
       <div class="box">
-        <h1>Available Currencies</h1>
-        <ul id="currencies">
-          <!-- available currency list will dynamically populate here -->
-        </ul>
-      </div>
-      <div class="box">
-        <p>Get currencies with exchange rate less than the Euro (base rate of 1):</p>
-        <button id="searchbutton" class="currency_button">Search</button>
-        <ul id="searchResultList">
-          <!-- results of filter will dynamically populate here -->
-        </ul>
+        <form id="currencyConverter">
+          <div class="row">
+            <div class="col-md-6">
+              <input type="text" readonly class="form-control-plaintext" value="Convert">
+              <label for="baseCurrency" class="sr-only">Select Base Currency</label>
+              <select class="form-control" id="baseCurrency">
+                <!-- available currency list will dynamically populate here -->
+              </select>
+              <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend">
+                  <div class="input-group-text"></div>
+                </div>
+                <input type="number" class="form-control" id="currencyInput1" placeholder="1">
+              </div>
+            </div>
+            <div class="col-md-6">  
+            <input type="text" readonly class="form-control-plaintext" value="into">
+              <label for="convertCurrency" class="sr-only">Select Currency to Convert to</label>
+              <select class="form-control" id="convertCurrency">
+                <!-- available currency list will dynamically populate here -->
+              </select>
+              <div class="input-group mb-2 mr-sm-2">
+                <div class="input-group-prepend">
+                  <div class="input-group-text"></div>
+                </div>
+                <input type="number" class="form-control" id="currencyInput2">
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
     </main>
     <div id='modal-container'>
@@ -53,6 +73,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="js/promise-polyfill.js"></script>
     <script src="js/fetch.umd.js"></script>
-    <script src="js/scripts.js"></script>
+    <script src="js/script.js"></script>
   </body>
 </html>
