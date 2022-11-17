@@ -4,8 +4,6 @@ let currencyRepository = (function() {
     let comparisonArray = [
         {name: 'USA', rate: 1, title: 'United States', symbol: '$' }
     ];
-    let currencyRates = [];
-    let currencyDetails = [];
 
     let apiUrl1 = 'https://api.vatcomply.com/rates';
     let apiUrl2 = "https://restcountries.com/v3.1/currency/"
@@ -36,7 +34,7 @@ let currencyRepository = (function() {
     /* retrieves full name and symbol per currency from rest API and adds items   
     to the currency's object, then adds the completed object to the array */
     function addCurrencyDetails(currency) {
-        let url = "https://restcountries.com/v3.1/currency/" + currency.name;
+        let url = apiUrl2 + currency.name;
         return fetch(url).then(function (response) {
             return response.json();
         }).then(function (details) {
@@ -76,7 +74,6 @@ let currencyRepository = (function() {
 
     // adds new currency name to unordered list and makes it a button to show details
     function addSelectItem(currency, currencies) {
-        console.log("here" + currencies);
         let selectItem = document.createElement('option');
         selectItem.innerText = currency.title;
         currencies.appendChild(selectItem);
