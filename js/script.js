@@ -18,13 +18,16 @@ let currencyRepository = (function() {
         let obj = json.rates; // gets data
         /* loops through object for each currency, creates a new object with key value pairs 
         and passes the object to a function to add more details and add object to an array */
+        const tempArray = [];
         for (const property in obj) {
             let currency = {
                 name: property,
                 rate: obj[property]
             };
-            addCurrencyDetails(currency);
-        } 
+            tempArray.push(currency);
+        }
+        return Promise.all(tempArray.map(addCurrencyDetails));
+
         }).catch(function (e) {
           console.error(e);
         });
@@ -76,6 +79,7 @@ let currencyRepository = (function() {
     function addSelectItem(currency, currencies) {
         let selectItem = document.createElement('option');
         selectItem.innerText = currency.title;
+        selectItem.setAttribute("value", currency.name);
         currencies.appendChild(selectItem);
     }
 
@@ -104,10 +108,8 @@ let convertCurrency = document.querySelector("#convertCurrency");
 // loops through all available currencies and adds them to an unordered list
 currencyRepository.createCurrencyObjs().then(function() {
     // Now the data is loaded! 
-    console.log(allCurrencies);
-    console.log(allCurrencies[0]);
-    console.log(allCurrencies.length);
     allCurrencies.forEach(function(currency){
         currencyRepository.addSelectItem(currency, baseCurrency);
+        currencyRepository.addSelectItem(currency, convertCurrency);
     });
 });
