@@ -172,7 +172,7 @@ baseCurrency.addEventListener("change", function(e) {
     let baseCurrencyName = e.target.value;
     
     currencyRepository.getSymbol(baseCurrencyName, 'base');
-    
+
     currencyRepository.getTheRates(baseCurrencyName).then(function() {    
         let allRates = currencyRepository.getAllCurrencyRates();
         allRates.forEach(function(currency) {
@@ -194,3 +194,12 @@ convertCurrency.addEventListener("change", function(e) {
 
 });
 
+input1.addEventListener("change", function(e) {
+    let convertRate = convertCurrency.options[convertCurrency.selectedIndex].dataset.rate;
+    document.getElementById('currencyInput2').value = input1.value*convertRate;
+});
+
+input2.addEventListener("change", function(e) {
+    let convertRate = convertCurrency.options[convertCurrency.selectedIndex].dataset.rate;
+    document.getElementById('currencyInput1').value = input2.value/convertRate;
+});
