@@ -36,8 +36,7 @@
       <div class="box">
         <form id="currencyConverter">
           <div class="row">
-            <div class="col-md-6">
-              <input type="text" readonly class="form-control-plaintext" value="Convert">
+            <div class="col-md-5">
               <label for="baseCurrency" class="sr-only">Select Base Currency</label>
               <select class="form-control" id="baseCurrency">
                 <option value="" disabled selected>Select Currency</option>
@@ -50,8 +49,12 @@
                 <input type="number" class="form-control" id="currencyInput1" value="1">
               </div>
             </div>
-            <div class="col-md-6">  
-            <input type="text" readonly class="form-control-plaintext" value="into">
+            <div class="col-md-2">
+              <div id="circlegraphic">
+                <object data="img/arrow.svg"> </object>
+              </div>
+            </div>  
+            <div class="col-md-5">  
               <label for="convertCurrency" class="sr-only">Select Currency to Convert to</label>
               <select class="form-control" id="convertCurrency">
                 <option value="" disabled selected>Select Currency</option>
