@@ -1,8 +1,12 @@
 let currencyRepository = (function() {
 
     let currencyList = [];
-    let comparisonArray = [
+    let currencyRates = [];
+    let comparisonArray1 = [
         {name: 'USA', rate: 1, title: 'United States', symbol: '$' }
+    ];
+    let comparisonArray2 = [
+        {name: 'USA', rate: 1}
     ];
 
     let apiUrl1 = 'https://api.vatcomply.com/rates';
@@ -43,18 +47,18 @@ let currencyRepository = (function() {
         }).then(function (details) {
             currency.title = details[0].currencies[currency.name].name;
             currency.symbol = details[0].currencies[currency.name].symbol;
-            add(currency);
+            add(currency, currencyList);
         }).catch(function (e) {
             console.error(e);
         });
     }
 
     // adds a currency object to the array
-    function add(currency) {
+    function add(currency, theArray) {
         // checks that new entry is an object and tests if the keys match with the existing object
-        if (typeof currency === "object" && checkCurrencyKeys(currency, comparisonArray[0])) {
+        if (typeof currency === "object" && (checkCurrencyKeys(currency, comparisonArray1[0]) || currency, comparisonArray2[0]) ) {
             // adds new object to currencyList array
-            currencyList.push(currency);
+            theArray.push(currency);
         }
     }
 
@@ -80,6 +84,7 @@ let currencyRepository = (function() {
         let selectItem = document.createElement('option');
         selectItem.innerText = currency.title;
         selectItem.setAttribute("value", currency.name);
+        // selectItem.setAttribute("data-rate", "");
         currencies.appendChild(selectItem);
     }
 
@@ -88,22 +93,71 @@ let currencyRepository = (function() {
         return currencyList;
     }
 
+    function getTheRates(baseCurrencyName) {
+
+        baseCurrencyURL = apiUrl1 + '?base=' + baseCurrencyName;   
+
+        return fetch(baseCurrencyURL).then(function (response) {
+            return response.json(); // gets promise
+        }).then(function (json) {
+            //uiFunctions.hideLoadingMessage();
+            let obj = json.rates; // gets data
+            /* loops through object with all currencies and assigns the 
+            key/value pairs to individual objects to be added to an array */
+            for (const property in obj) {
+                let currency = {
+                name: property,
+                rate: obj[property]
+                };
+                add(currency, currencyRates);
+            }
+        }).catch(function (e) {
+            console.error(e);
+        });
+
+    }
+
+    function getAllCurrencyRates() {
+        return currencyRates;
+    }
+
+    function getSymbol(currencyName, symBox) {
+        // adds chosen currency symbol to field
+        let currencyObj = allCurrencies.find(obj => {
+            return obj.name === currencyName;
+        });
+        if (symBox === 'base') {
+            let symbol1box = document.getElementById('baseCurrencySymbol');
+            symbol1box.innerText = currencyObj.symbol;
+        }
+        else {
+            let symbol2box = document.getElementById('convertCurrencySymbol');
+            symbol2box.innerText = currencyObj.symbol;
+        }
+        
+    }
+
     // creates keys that allow the functions to be accessible outside of the scope of this function's state
     return {
         createCurrencyObjs: createCurrencyObjs,
         add: add,
         addSelectItem: addSelectItem,
-        getAll: getAll
+        getAll: getAll,
+        getTheRates: getTheRates,
+        getAllCurrencyRates: getAllCurrencyRates,
+        getSymbol: getSymbol,
     };
 
 })();
 
 // assigns array of currency objects to allCurrencies variable
-let allCurrencies = currencyRepository.getAll();
+let allCurrencies = currencyRepository.getAll('currencyList');
 
 // sets up HTML elements to display the currency list within
 let baseCurrency = document.querySelector("#baseCurrency");
 let convertCurrency = document.querySelector("#convertCurrency");
+let input1 = document.getElementById('currencyInput1');
+let input2 = document.getElementById('currencyInput2');
 
 // loops through all available currencies and adds them to an unordered list
 currencyRepository.createCurrencyObjs().then(function() {
@@ -113,3 +167,30 @@ currencyRepository.createCurrencyObjs().then(function() {
         currencyRepository.addSelectItem(currency, convertCurrency);
     });
 });
+
+baseCurrency.addEventListener("change", function(e) {
+    let baseCurrencyName = e.target.value;
+    
+    currencyRepository.getSymbol(baseCurrencyName, 'base');
+    
+    currencyRepository.getTheRates(baseCurrencyName).then(function() {    
+        let allRates = currencyRepository.getAllCurrencyRates();
+        allRates.forEach(function(currency) {
+            let selectCurrency = convertCurrency.querySelector('option[value=' + currency.name + ']');
+            selectCurrency.dataset.rate = currency.rate;
+        });
+
+    });
+
+});
+
+convertCurrency.addEventListener("change", function(e) {
+    let convertCurrencyName = e.target.value;
+    let convertRate = e.target.options[e.target.selectedIndex].dataset.rate;
+
+    currencyRepository.getSymbol(convertCurrencyName, 'convert');
+
+    document.getElementById('currencyInput2').value = input1.value*convertRate;
+
+});
+
