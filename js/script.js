@@ -14,11 +14,9 @@ let currencyRepository = (function() {
 
     // retrieves name abbreviation and exchange rate from Vat API 
     function createCurrencyObjs() {
-        // uiFunctions.showLoadingMessage();
         return fetch(apiUrl1).then(function (response) {
           return response.json(); // gets promise
         }).then(function (json) {
-        //   uiFunctions.hideLoadingMessage();
         let obj = json.rates; // gets data
         /* loops through object for each currency, creates a new object with key value pairs 
         and passes the object to a function to add more details and add object to an array */
@@ -84,7 +82,6 @@ let currencyRepository = (function() {
         let selectItem = document.createElement('option');
         selectItem.innerText = currency.title;
         selectItem.setAttribute("value", currency.name);
-        // selectItem.setAttribute("data-rate", "");
         currencies.appendChild(selectItem);
     }
 
@@ -93,6 +90,7 @@ let currencyRepository = (function() {
         return currencyList;
     }
 
+    // when base currency's option is selected, this retrieves the relative rates for the other currencies
     function getTheRates(baseCurrencyName) {
 
         baseCurrencyURL = apiUrl1 + '?base=' + baseCurrencyName;   
@@ -100,7 +98,6 @@ let currencyRepository = (function() {
         return fetch(baseCurrencyURL).then(function (response) {
             return response.json(); // gets promise
         }).then(function (json) {
-            //uiFunctions.hideLoadingMessage();
             let obj = json.rates; // gets data
             /* loops through object with all currencies and assigns the 
             key/value pairs to individual objects to be added to an array */
@@ -117,15 +114,18 @@ let currencyRepository = (function() {
 
     }
 
+    // returns the rate array
     function getAllCurrencyRates() {
         return currencyRates;
     }
 
+    // retrieves symbol for selected currency and adds it to page
     function getSymbol(currencyName, symBox) {
-        // adds chosen currency symbol to field
+        // finds the object that matches the currency
         let currencyObj = allCurrencies.find(obj => {
             return obj.name === currencyName;
         });
+        // adds chosen currency's symbol to field
         if (symBox === 'base') {
             let symbol1box = document.getElementById('baseCurrencySymbol');
             symbol1box.innerText = currencyObj.symbol;
@@ -168,17 +168,22 @@ currencyRepository.createCurrencyObjs().then(function() {
     });
 });
 
+/* when option is selected, adds the symbol to the page and adds all rates relative to
+the chosen base currency to data attributes for the conversion select items */ 
 baseCurrency.addEventListener("change", function(e) {
     let baseCurrencyName = e.target.value;
     
     currencyRepository.getSymbol(baseCurrencyName, 'base');
 
+    // gets rates for the chosen base currency
     currencyRepository.getTheRates(baseCurrencyName).then(function() {    
         let allRates = currencyRepository.getAllCurrencyRates();
+        // loops through rates and assigns them to data attribute to select option
         allRates.forEach(function(currency) {
             let selectCurrency = convertCurrency.querySelector('option[value=' + currency.name + ']');
             selectCurrency.dataset.rate = currency.rate;
         });
+        // if the conversion select is chosen first, converts with the selected base currency and adds to input field
         if (convertCurrency.value != "" && input2.value == "") {
             let convertRate = convertCurrency.options[convertCurrency.selectedIndex].dataset.rate;
             input2.value = input1.value*convertRate;
@@ -187,23 +192,28 @@ baseCurrency.addEventListener("change", function(e) {
 
 });
 
+/* when converstion option is chosen, adds the symbol to the page and calculates
+the converted value based on the conversion rate in the data attribute*/
 convertCurrency.addEventListener("change", function(e) {
     let convertCurrencyName = e.target.value;
     let convertRate = e.target.options[e.target.selectedIndex].dataset.rate;
 
     currencyRepository.getSymbol(convertCurrencyName, 'convert');
 
+    // calculates converted value and adds to input field
     if (baseCurrency.value != "") {
         input2.value = input1.value*convertRate;
     }
 
 });
 
+// if input field for base currency is changed, calculate the converted value and assign to other input
 input1.addEventListener("change", function(e) {
     let convertRate = convertCurrency.options[convertCurrency.selectedIndex].dataset.rate;
     input2.value = input1.value*convertRate;
 });
 
+// if input field for conversion currency is changed, calculate the converted value and assign to other input
 input2.addEventListener("change", function(e) {
     let convertRate = convertCurrency.options[convertCurrency.selectedIndex].dataset.rate;
     input1.value = input2.value/convertRate;
