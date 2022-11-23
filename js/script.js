@@ -179,7 +179,10 @@ baseCurrency.addEventListener("change", function(e) {
             let selectCurrency = convertCurrency.querySelector('option[value=' + currency.name + ']');
             selectCurrency.dataset.rate = currency.rate;
         });
-
+        if (convertCurrency.value != "" && input2.value == "") {
+            let convertRate = convertCurrency.options[convertCurrency.selectedIndex].dataset.rate;
+            input2.value = input1.value*convertRate;
+        }
     });
 
 });
@@ -190,16 +193,18 @@ convertCurrency.addEventListener("change", function(e) {
 
     currencyRepository.getSymbol(convertCurrencyName, 'convert');
 
-    document.getElementById('currencyInput2').value = input1.value*convertRate;
+    if (baseCurrency.value != "") {
+        input2.value = input1.value*convertRate;
+    }
 
 });
 
 input1.addEventListener("change", function(e) {
     let convertRate = convertCurrency.options[convertCurrency.selectedIndex].dataset.rate;
-    document.getElementById('currencyInput2').value = input1.value*convertRate;
+    input2.value = input1.value*convertRate;
 });
 
 input2.addEventListener("change", function(e) {
     let convertRate = convertCurrency.options[convertCurrency.selectedIndex].dataset.rate;
-    document.getElementById('currencyInput1').value = input2.value/convertRate;
+    input1.value = input2.value/convertRate;
 });
